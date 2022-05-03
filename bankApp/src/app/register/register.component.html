@@ -1,0 +1,60 @@
+<div class="container col-md-12 mt-0">
+    <div class="d-flex justify-content-center h-100">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Sign up</h3>
+
+            </div>
+            <div class="card-body">
+                <form [formGroup]="registerform" (ngSubmit)="register()">
+
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <!-- event binding using $event-  -->
+                        <!-- template reference -->
+                        <!-- two way binding using ngModel -->
+
+                        <input type="text" name="uname" formControlName="uname" class="form-control"
+                            placeholder="username" id="login_uname" required>
+
+                    </div>
+
+                    <div *ngIf="(this.registerform.get('uname')?.touched) && this.registerform.get('uname')?.errors" style="color: red;">invalid username</div>
+
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        </div>
+                        <!-- event binding using $event-  -->
+                        <!-- template reference -->
+                        <!-- two way binding using ngModel -->
+
+                        <input type="text" name="acno" formControlName="acno" class="form-control" placeholder="accNum"
+                            id="login_accno" required>
+
+                    </div>
+
+                    <div *ngIf="(this.registerform.get('acno')?.touched) && this.registerform.get('acno')?.errors" style="color: red;">invalid account Number</div>
+
+                    <div class="input-group form-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                        </div>
+                        <input type="password" name="pwd" formControlName="pwd" class="form-control"
+                            placeholder="password" id="login_password" required>
+                    </div>
+
+                    <div *ngIf="(this.registerform.get('pwd')?.touched) && this.registerform.get('pwd')?.errors" style="color: red;">invalid password</div>
+
+
+                    <div class="form-group">
+                        <input type="submit" value="register" class="btn float-right login_btn " style="width:50%">
+                    </div>
+                </form>
+            </div>
+            <p style="color:white;align-items:baseline;">existing user? <a routerLink="">log in</a></p>
+        </div>
+    </div>
+</div>
