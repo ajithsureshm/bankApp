@@ -1,4 +1,9 @@
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+
+const options = {
+  headers: new HttpHeaders
+}
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +21,7 @@ export class DataService {
 
   }
 
-  constructor() {
+  constructor(private htpp: HttpClient) {
     this.getDetails()
   }
 
@@ -56,23 +61,14 @@ export class DataService {
 
   register(username: any, acno: any, password: any) {
 
-    let database = this.database
-
-    if (acno in database) {
-
-      // already exist
-      return false
-
-    } else {
-
-      // add to db
-      database[acno] = { acno, username, password, balance: 0, transaction: [] }
-      console.log(database);
-      this.saveDetails()
-      return true
-
-
+    const data = {
+      username,
+      acno,
+      password
     }
+
+    // register function api call
+    return this.htpp.post('http://localhost:3000/register', data)
 
   }
 
@@ -80,109 +76,64 @@ export class DataService {
 
   login(acno: any, pwd: any) {
 
-
-
-    let database = this.database
-
-    if (acno in database) {
-
-      if (pwd == database[acno]["password"]) {
-
-        this.currentUser = database[acno]["username"]
-        this.currentAcno = acno
-        // already login
-        this.saveDetails()
-        return true
-
-      } else {
-        alert("incorrect password")
-        return false
-      }
-
-    } else {
-      alert("user does not exist !!!")
-      return false
+    // req body
+    const data = {
+      acno,
+      pwd
     }
+
+    // login api call
+    return this.htpp.post('http://localhost:3000/login', data)
   }
 
   // deposit
 
   deposit(acno: any, pwd: any, amt: any) {
 
-    var amount = parseInt(amt)
-
-    let database = this.database
-
-    if (acno in database) {
-      if (pwd == database[acno]["password"]) {
-
-        database[acno]["balance"] += amount
-
-
-        database[acno]["transaction"].push({
-          type: "CREDIT",
-          amount: amount
-        })
-
-        // console.log(database);
-
-        this.saveDetails()
-
-        return database[acno]["balance"]
-      } else {
-        alert("incorrect password")
-        return false
-      }
-
-    } else {
-      alert("user does not exits!!!")
-      return false
+    const data = {
+      acno,
+      pwd,
+      amt
     }
+
+
+
+    // deposit api calling
+
+    return this.htpp.post('http://localhost:3000/deposit', data, this.getFunctions())
+  }
+
+  getFunctions() {
+    // to fetch token
+
+    const token = JSON.parse(localStorage.getItem('token') || '')
+
+    // create http header
+    let headers = new HttpHeaders()
+
+    if (token) {
+      headers = headers.append('x-acess-token', token)
+      options.headers = headers
+
+    }
+    return options
   }
 
   // withdraw
 
   withdraw(acno: any, pwd1: any, amt1: any) {
 
-    var amount = parseInt(amt1)
 
-    let database = this.database
-
-    if (acno in database) {
-
-      if (pwd1 == database[acno]["password"]) {
-
-        if (amount <= database[acno]["balance"]) {
-
-          database[acno]["balance"] -= amount // balance = balance - amount
-
-
-          database[acno]["transaction"].push({
-            type: "DEBIT",
-            amount: amount
-          })
-
-          console.log(database);
-
-          this.saveDetails()
-
-          return database[acno]["balance"]
-
-        } else {
-          alert("insufficent balance")
-          return false
-        }
-
-      } else {
-        alert("incorrect password")
-        return false
-      }
-
-    } else {
-      alert("user doesnot exicts!!!")
-      return false
+    const data = {
+      acno,
+      pwd1,
+      amt1
     }
 
+
+    // deposit api calling
+
+    return this.htpp.post('http://localhost:3000/withdraw', data, this.getFunctions())
 
   }
 
@@ -190,6 +141,20 @@ export class DataService {
 
   transaction(acno: any) {
 
-    return this.database[acno].transaction
+    const data = {
+      acno
+    }
+
+    // deposit api calling
+
+    return this.htpp.post('http://localhost:3000/transaction', data, this.getFunctions())
+
+  }
+
+  onDelete(acno:any){
+    // onDelete api callling
+
+    return this.htpp.delete('http://localhost:3000/onDelete/'+acno, this.getFunctions())
+
   }
 }

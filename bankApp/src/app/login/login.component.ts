@@ -65,32 +65,30 @@ export class LoginComponent implements OnInit {
 
 
       // call dataservice
-      const result = this.db.login(acno, pwd)
+      this.db.login(acno, pwd)
+        .subscribe((result: any) => {
 
-      if (result) {
+          if (result) {
 
-        alert("login sucessfully")
+            // localstorage 
 
-        this.router.navigateByUrl("dashboard")
-
-      }
-
-      // if (acno in this.db.database) {
-
-      //   if (pwd == this.db.database[acno]["password"]) {
-
-      //     alert("login sucessfully")
-
-      //     this.router.navigateByUrl("dashboard")
+            localStorage.setItem('currentAcno',JSON.stringify(result.currentAcno))
+            localStorage.setItem('currentUser',JSON.stringify(result.currentUser))
+            localStorage.setItem('token',JSON.stringify(result.token))
 
 
-      //   } else {
-      //     alert("incorrect password")
-      //   }
 
-      // } else {
-      //   alert("user does not exist !!!")
-      // }
+            alert(result.message)
+
+            this.router.navigateByUrl("dashboard")
+
+          }
+        },
+          (result) => {
+            alert(result.error.message)
+          })
+
+
     } else {
       alert("invalid form")
     }

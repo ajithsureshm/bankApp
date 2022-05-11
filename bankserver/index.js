@@ -3,16 +3,22 @@
 
 // import express
 const express = require('express');
-const req = require('express/lib/request');
-const { json } = require('express/lib/response');
-const res = require('express/lib/response');
+
 
 // import token
 const jwt = require('jsonwebtoken')
 
+// import cors
+const cors = require('cors')
+
 
 // create server app using express
 const app = express()
+
+// use cors
+app.use(cors({
+    origin: 'http://localhost:4200'
+}))
 
 // to parse json
 app.use(express.json())
@@ -50,24 +56,30 @@ app.delete('/', (req, res) => {
 
 // import dataservice
 
-const dataservice = require('./service/data.service')
+const dataservice = require('./service/data.service');
+const res = require('express/lib/response');
 
 
 
 // register API
 
 app.post('/register', (req, res) => {
-    const result = dataservice.register(req.body.username, req.body.acno, req.body.password)
+    dataservice.register(req.body.username, req.body.acno, req.body.password)
+        .then(result => {
+            res.status(result.statusCode).json(result)
 
-    res.status(result.statusCode).json(result)
+        })
 })
 
 // login API
 
 app.post('/login', (req, res) => {
-    const result = dataservice.login(req.body.acno, req.body.pwd)
+    dataservice.login(req.body.acno, req.body.pwd)
+        .then(result => {
+            res.status(result.statusCode).json(result)
 
-    res.status(result.statusCode).json(result)
+        })
+
 })
 
 
@@ -93,26 +105,46 @@ const middlevare = (req, res, next) => {
 // deposit 
 
 app.post('/deposit', middlevare, (req, res) => {
-    const result = dataservice.deposit(req.body.acno, req.body.pwd, req.body.amt)
+    dataservice.deposit(req.body.acno, req.body.pwd, req.body.amt)
+        .then(result => {
+            res.status(result.statusCode).json(result)
 
-    res.status(result.statusCode).json(result)
+        })
+
 })
 
 // withdraw 
 
 app.post('/withdraw', middlevare, (req, res) => {
-    const result = dataservice.withdraw(req, req.body.acno, req.body.pwd1, req.body.amt1)
+    dataservice.withdraw(req, req.body.acno, req.body.pwd1, req.body.amt1)
+        .then(result => {
+            res.status(result.statusCode).json(result)
 
-    res.status(result.statusCode).json(result)
+        })
+
 })
 
 // transaction 
 
 app.post('/transaction', middlevare, (req, res) => {
-    const result = dataservice.transaction(req.body.acno)
+    dataservice.transaction(req.body.acno)
+        .then(result => {
+            res.status(result.statusCode).json(result)
 
-    res.status(result.statusCode).json(result)
+        })
+
 })
+
+
+// onDelete API
+
+app.delete('/onDelete/:acno', middlevare, (req, res) => {
+    dataservice.deleteAcc(req.params.acno)
+        .then(result => {
+            res.status(result.statusCode).json(result)
+        })
+})
+
 
 // set port number
 app.listen(3000, () => {

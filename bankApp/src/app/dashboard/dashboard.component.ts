@@ -10,8 +10,8 @@ import { DataService } from '../service/data.service';
 })
 export class DashboardComponent implements OnInit {
 
-  user:any
-  acno:any
+  user: any
+  acno: any
 
   // // depossit 
   // acno = ""
@@ -42,19 +42,19 @@ export class DashboardComponent implements OnInit {
     pwd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]]
   })
 
-  date:any
+  date: any
 
-  constructor(private ds: DataService, private fb: FormBuilder, private router:Router) { 
-    this.user=this.ds.currentUser
-    this.date=new Date()
+  constructor(private ds: DataService, private fb: FormBuilder, private router: Router) {
+    this.user = JSON.parse(localStorage.getItem('currentUser') || '')
+    this.date = new Date()
 
   }
 
   ngOnInit(): void {
-    if (!localStorage.getItem("currentAcno")) {
-      alert("plz login")
-      this.router.navigateByUrl("")
-    }
+    // if (!localStorage.getItem("currentAcno")) {
+    //   alert("plz login")
+    //   this.router.navigateByUrl("")
+    // }
   }
 
   deposit() {
@@ -66,12 +66,18 @@ export class DashboardComponent implements OnInit {
 
 
       // call deposit in data service
-      const result = this.ds.deposit(acno, pwd, amt)
+      this.ds.deposit(acno, pwd, amt)
 
-      if (result) {
-        alert(amt + "sucessfully deposited.. And current balance" + result)
-      }
+        .subscribe((result: any) => {
 
+          if (result) {
+            alert(result.message)
+          }
+        },
+          (result) => {
+            alert(result.error.message)
+          }
+        )
 
     } else {
       alert("invalid entry")
@@ -88,11 +94,20 @@ export class DashboardComponent implements OnInit {
 
 
       // call withdraw in data service
-      const result1 = this.ds.withdraw(acno, pwd, amt)
+      this.ds.withdraw(acno, pwd, amt)
 
-      if (result1) {
-        alert(amt + "sucessfully withdraw.. your current balance is" + result1)
-      }
+        .subscribe((result1: any) => {
+
+          if (result1) {
+            alert(result1.message)
+          }
+        },
+          (result1) => {
+            alert(result1.error.message)
+          }
+        )
+
+
     } else {
       alert("invalid entry")
     }
@@ -100,7 +115,7 @@ export class DashboardComponent implements OnInit {
 
   // logout 
 
-  logout(){
+  logout() {
     localStorage.removeItem("currentAcno")
     localStorage.removeItem("currentUser")
 
@@ -111,16 +126,29 @@ export class DashboardComponent implements OnInit {
 
   // delect function
 
-  deleteFunction(){
-    this.acno=JSON.parse (localStorage.getItem("currentAcno")||'')
+  deleteFunction() {
+    this.acno = JSON.parse(localStorage.getItem("currentAcno") || '')
   }
 
-  onCancel(){
-    this.acno=""
+  onCancel() {
+    this.acno = ""
   }
 
-  onDelete(event:any){
-    alert("delect account"+event)
+  onDelete(event: any) {
+
+    // calling onDelete in database
+
+    this.ds.onDelete(event)
+      .subscribe((result: any) => {
+        if (result) {
+          alert(result.message)
+          this.router.navigateByUrl('')
+        }
+      },
+        (result: any) => {
+          alert(result.error.message)
+        }
+      )
   }
 
 }

@@ -9,3 +9,14 @@ table,th,td{
     border-style: solid;
 
 }
+.img{
+    background-size: cover;
+    background-repeat: repeat;
+    background-blend-mode: multiply;
+    height: 50%;
+    width: 100%;
+   font-family: 'Numans', sans-serif; 
+   padding-bottom: 180px;
+   margin-top: -20px;
+
+}

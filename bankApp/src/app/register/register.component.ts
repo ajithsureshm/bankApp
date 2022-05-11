@@ -10,14 +10,15 @@ import { DataService } from '../service/data.service';
 })
 export class RegisterComponent implements OnInit {
 
+  // myImage:string="assets/register.jpg";
 
 
   // register modal
 
   registerform = this.fb.group({
     uname: ['', [Validators.required, Validators.pattern('[a-zA-Z ]*')]],
-    acno: ['',[Validators.required, Validators.pattern('[0-9]*')]],
-    pwd: ['',[Validators.required, Validators.pattern('[a-zA-Z0-9]*')]]
+    acno: ['', [Validators.required, Validators.pattern('[0-9]*')]],
+    pwd: ['', [Validators.required, Validators.pattern('[a-zA-Z0-9]*')]]
   })
 
 
@@ -36,17 +37,23 @@ export class RegisterComponent implements OnInit {
 
     if (this.registerform.valid) {
 
-      const result = this.db.register(uname, acno, pwd)
+      this.db.register(uname, acno, pwd)
 
-      if (result) {
+        .subscribe((result: any) => {
 
-        alert("sucessfully registered")
-        this.router.navigateByUrl("")
+          if (result) {
+            alert(result.message)
+            this.router.navigateByUrl("")
 
-      } else {
-        alert("account already exicts!!! plz log in")
-      }
-    }else{
+          }
+        },
+          (result) => {
+            alert(result.error.message)
+          }
+        )
+
+
+    } else {
       alert("invalid form")
     }
 
